@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% block title %}Admin - Smart College Canteen{% endblock %}
+
+{% block content %}
+<section class="hero small">
+    <h1>⚙️ Admin Panel</h1>
+    <p>Manage food availability, stock, and view recent orders.</p>
+</section>
+
+<h2 class="section-title">Menu Management</h2>
+<table class="admin-table">
+    <thead>
+        <tr><th>Item</th><th>Price</th><th>Stock Qty</th><th>Available</th><th></th></tr>
+    </thead>
+    <tbody>
+        {% for item in items %}
+        <tr>
+            <td>{{ item.icon }} {{ item.name }}</td>
+            <td>₹{{ "%.2f"|format(item.price) }}</td>
+            <td>
+                <input type="number" min="0" value="{{ item.stock_qty }}" class="stock-input input-text" data-id="{{ item.id }}" style="width:80px;">
+            </td>
+            <td>
+                <span class="badge {{ 'available' if item.available and item.stock_qty>0 else 'unavailable' }}" id="avail-badge-{{ item.id }}">
+                    {{ 'Available' if item.available and item.stock_qty>0 else 'Unavailable' }}
+                </span>
+            </td>
+            <td><button class="btn-secondary toggle-avail-btn" data-id="{{ item.id }}">Toggle</button></td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<h2 class="section-title">Recent Orders</h2>
+<table class="admin-table">
+    <thead>
+        <tr><th>Code</th><th>Customer</th><th>Total</th><th>Status</th><th>Payment</th><th>Time</th></tr>
+    </thead>
+    <tbody>
+        {% for o in orders %}
+        <tr>
+            <td>{{ o.order_code }}</td>
+            <td>{{ o.customer_name }}</td>
+            <td>₹{{ "%.2f"|format(o.total_amount) }}</td>
+            <td>{{ o.status }}</td>
+            <td>
+                <span class="badge {{ 'available' if o.payment_status == 'paid' else 'unavailable' }}">
+                    {{ o.payment_status }}
+                </span>
+            </td>
+            <td>{{ o.created_at }}</td>
+        </tr>
+        {% else %}
+        <tr><td colspan="6" class="muted">No orders yet.</td></tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/script.js') }}"></script>
+{% endblock %}

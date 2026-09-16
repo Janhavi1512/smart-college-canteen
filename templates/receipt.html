@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+{% block title %}Receipt {{ order.order_code }}{% endblock %}
+
+{% block content %}
+<div class="receipt-wrap">
+    <div class="receipt-card" id="receiptCard">
+        <div class="receipt-head">
+            <h2>🍽️ Smart College Canteen</h2>
+            <p class="muted">Order Receipt</p>
+        </div>
+
+        <div class="receipt-status" id="statusBanner"
+             data-status="{{ order.payment_status }}">
+            {% if order.payment_status == 'paid' %}
+                ✅ Paid &amp; Served
+            {% else %}
+                ⏳ Show this receipt at the counter to pay
+            {% endif %}
+        </div>
+
+        <div class="qr-box">
+            <img src="data:image/png;base64,{{ qr_b64 }}" alt="Order QR Code">
+            <p class="order-code">{{ order.order_code }}</p>
+        </div>
+
+        <table class="receipt-table">
+            <tr><td>Customer</td><td>{{ order.customer_name }}</td></tr>
+            <tr><td>Date &amp; Time</td><td>{{ order.created_at }}</td></tr>
+        </table>
+
+        <table class="receipt-items">
+            <thead>
+                <tr><th>Item</th><th>Qty</th><th>Price</th><th>Subtotal</th></tr>
+            </thead>
+            <tbody>
+            {% for it in items %}
+                <tr>
+                    <td>{{ it.name }}</td>
+                    <td>{{ it.qty }}</td>
+                    <td>₹{{ "%.2f"|format(it.price) }}</td>
+                    <td>₹{{ "%.2f"|format(it.subtotal) }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+
+        <div class="receipt-total">
+            Total to Pay: <strong>₹{{ "%.2f"|format(order.total_amount) }}</strong>
+        </div>
+
+        <p class="muted small">Keep this screen open and show the QR code to the counter staff to complete payment.</p>
+    </div>
+
+    <a href="{{ url_for('home') }}" class="btn-secondary">← Back to Menu</a>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// Poll payment status every 5s so the customer sees a live "Paid" update
+const orderCode = "{{ order.order_code }}";
+async function pollStatus() {
+    try {
+        const res = await fetch(`/api/order_status/${orderCode}`);
+        const data = await res.json();
+        const banner = document.getElementById("statusBanner");
+        if (data.payment_status === "paid") {
+            banner.textContent = "✅ Paid & Served";
+            banner.dataset.status = "paid";
+            clearInterval(timer);
+        }
+    } catch (e) { /* silent */ }
+}
+const timer = setInterval(pollStatus, 5000);
+</script>
+{% endblock %}

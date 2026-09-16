@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block title %}Counter - Smart College Canteen{% endblock %}
+
+{% block content %}
+<section class="hero small">
+    <h1>🧾 Counter Verification</h1>
+    <p>Scan the customer's receipt QR code or enter the order code manually.</p>
+</section>
+
+<div class="counter-wrap">
+    <div class="scan-box">
+        <div id="qr-reader"></div>
+        <button id="startScanBtn" class="btn-secondary">📷 Start Camera Scan</button>
+        <button id="stopScanBtn" class="btn-secondary" style="display:none;">Stop Camera</button>
+
+        <div class="manual-entry">
+            <input type="text" id="manualCode" placeholder="e.g. SCC-A1B2C3D4" class="input-text">
+            <button id="lookupBtn" class="btn-primary">Lookup Order</button>
+        </div>
+        <p id="lookupError" class="error-msg"></p>
+    </div>
+
+    <div class="order-details" id="orderDetails" style="display:none;">
+        <h2>Order <span id="odCode"></span></h2>
+        <p><strong>Customer:</strong> <span id="odCustomer"></span></p>
+        <p><strong>Placed:</strong> <span id="odTime"></span></p>
+        <table class="receipt-items">
+            <thead><tr><th>Item</th><th>Qty</th><th>Subtotal</th></tr></thead>
+            <tbody id="odItems"></tbody>
+        </table>
+        <div class="receipt-total">Total: <strong id="odTotal"></strong></div>
+        <p><strong>Payment status:</strong> <span id="odPayStatus" class="badge"></span></p>
+
+        <div id="payControls" class="pay-controls">
+            <select id="paymentMode" class="input-text">
+                <option value="cash">Cash</option>
+                <option value="upi">UPI</option>
+                <option value="card">Card</option>
+            </select>
+            <button id="markPaidBtn" class="btn-primary">✅ Confirm Payment &amp; Serve</button>
+        </div>
+        <p id="payMsg" class="success-msg"></p>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+<script src="{{ url_for('static', filename='js/script.js') }}"></script>
+{% endblock %}

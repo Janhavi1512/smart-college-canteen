@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+{% block title %}Menu - Smart College Canteen{% endblock %}
+
+{% block content %}
+<section class="hero">
+    <h1>Today's Menu</h1>
+    <p>Order online, get an instant receipt, and pay at the counter.</p>
+</section>
+
+<div class="filter-bar" id="filterBar">
+    <button class="filter-btn active" data-cat="all">All</button>
+    {% for cat in categories %}
+    <button class="filter-btn" data-cat="{{ cat }}">{{ cat }}</button>
+    {% endfor %}
+</div>
+
+<div class="menu-grid" id="menuGrid">
+    {% for item in items %}
+    <div class="menu-card {% if not item.available or item.stock_qty <= 0 %}unavailable{% endif %}" data-cat="{{ item.category }}">
+        <div class="menu-icon">{{ item.icon }}</div>
+        <div class="menu-info">
+            <h3>{{ item.name }}</h3>
+            <p class="desc">{{ item.description }}</p>
+            <div class="menu-meta">
+                <span class="price">₹{{ "%.2f"|format(item.price) }}</span>
+                {% if item.available and item.stock_qty > 0 %}
+                    <span class="badge available">In Stock ({{ item.stock_qty }})</span>
+                {% else %}
+                    <span class="badge unavailable">Out of Stock</span>
+                {% endif %}
+            </div>
+        </div>
+        <div class="menu-action">
+            {% if item.available and item.stock_qty > 0 %}
+            <div class="qty-control">
+                <button class="qty-btn minus" data-id="{{ item.id }}">−</button>
+                <span class="qty-val" id="qty-{{ item.id }}">0</span>
+                <button class="qty-btn plus" data-id="{{ item.id }}"
+                    data-name="{{ item.name }}" data-price="{{ item.price }}" data-max="{{ item.stock_qty }}">+</button>
+            </div>
+            {% else %}
+            <button class="qty-btn plus" disabled>Unavailable</button>
+            {% endif %}
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<!-- Cart Drawer -->
+<div class="cart-drawer" id="cartDrawer">
+    <div class="cart-header">
+        <h2>🛒 Your Order</h2>
+        <span id="cartCount" class="cart-count">0</span>
+    </div>
+    <div id="cartItems" class="cart-items">
+        <p class="empty-cart">Your cart is empty. Tap "+" on any item to add it.</p>
+    </div>
+    <div class="cart-footer">
+        <input type="text" id="customerName" placeholder="Your name (for the receipt)" class="input-text">
+        <div class="cart-total">Total: <span id="cartTotal">₹0.00</span></div>
+        <button id="placeOrderBtn" class="btn-primary" disabled>Place Order</button>
+        <p id="orderError" class="error-msg"></p>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/script.js') }}"></script>
+{% endblock %}

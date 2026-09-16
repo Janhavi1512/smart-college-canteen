@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{% block title %}Smart College Canteen{% endblock %}</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🍽️</text></svg>">
+</head>
+<body>
+
+<nav class="navbar">
+    <a href="{{ url_for('home') }}" class="brand">🍽️ Smart College Canteen</a>
+    <div class="nav-links">
+        <a href="{{ url_for('home') }}">Menu &amp; Order</a>
+        <a href="{{ url_for('reviews_page') }}">Reviews</a>
+        <a href="{{ url_for('counter') }}">Counter (Staff)</a>
+        <a href="{{ url_for('admin') }}">Admin</a>
+    </div>
+</nav>
+
+<main class="container">
+    {% block content %}{% endblock %}
+</main>
+
+<footer class="footer">
+    Smart College Canteen &copy; 2026 &mdash; Order online, pay at counter.
+</footer>
+
+{% block scripts %}{% endblock %}
+</body>
+</html>
